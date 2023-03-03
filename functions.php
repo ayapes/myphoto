@@ -12,11 +12,19 @@ function neko_theme_setup() {
     // 固定ページ・投稿ページのアイキャッチサイズ.
     add_image_size( 'page_eyecatch', 1100, 610, true );
     // 記事一覧のアイキャッチサイズ.
-    add_image_size( 'archive_thumbnail', 200, 150, true );
+    add_image_size( 'archive_thumbnail', 400, 400, true );
     // カスタムメニュー有効化.
     register_nav_menu( 'main-menu', 'メインメニュー' );
 }
 add_action( 'after_setup_theme', 'neko_theme_setup' );
+
+//サムネイルのサイズ指定削除
+add_filter( 'post_thumbnail_html', 'remove_thumbnail_dimensions', 10, 3 );
+ 
+function remove_thumbnail_dimensions( $html, $post_id, $post_image_id ) {
+    $html = preg_replace( '/(width|height)=\"\d*\"\s/', "", $html );
+    return $html;
+}
 
 /**
  * 外部ファイルの読み込み
@@ -32,6 +40,14 @@ function neko_enqueue_scripts(){
         '1.0.0',
         true
     );
+
+    // reset cssを読み込む
+    wp_enqueue_style(
+        'destyle-css',
+        'https://cdn.jsdelivr.net/npm/destyle.css@3.0.2/destyle.css',
+        array(),
+        '3.0.2'
+    );
     // Google Fontsを読み込む.
     wp_enqueue_style(
         'googlefonts',
@@ -44,7 +60,7 @@ function neko_enqueue_scripts(){
         'kuroneko-theme-styles',
         get_template_directory_uri() . '/assets/css/theme-styles.css',
         array(),
-        '1.0.0'
+        '1.0.1'
     );
 }
 add_action( 'wp_enqueue_scripts', 'neko_enqueue_scripts' );
